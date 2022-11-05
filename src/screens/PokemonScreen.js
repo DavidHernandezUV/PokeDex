@@ -1,10 +1,58 @@
-import React from "react";
-import { Text, SafeAreaView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { ScrollView } from "react-native";
+import { getPokemonDetailsApi } from "../api/pokemon";
+import Header from "../components/Pokemon/Header";
+import Type from "../components/Pokemon/Type";
+import Stats from "../components/Pokemon/Stats";
+import Icon from "react-native-vector-icons/FontAwesome5";
 
-export default function Pokemon() {
+export default function Pokemon(props) {
+  const {
+    navigation,
+    route: { params },
+  } = props;
+  const [pokemon, setPokemon] = useState(null);
+
+  useEffect(() => {
+    navigation.setOptions({
+      //headerRight: () => null,
+      headerLeft: () => (
+        <Icon
+          name="arrow-left"
+          color="#fff"
+          size={20}
+          style={{ marginLeft: 20 }}
+          onPress={navigation.goBack}
+        />
+      ),
+    });
+  }, [navigation, params]); //Modificar la parte de arriba al cambiar de pokemon
+
+  //se ejecuta cada que se modifica params (un id distinto)
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await getPokemonDetailsApi(params.id);
+        setPokemon(response);
+      } catch (error) {
+        //si no encuentra el pokemon
+        navigation.goBack(); //ir un paso hacia atrás
+      }
+    })();
+  }, [params]);
+
+  if (!pokemon) return null;
+
   return (
-    <SafeAreaView>
-      <Text>Estamos en un Pokemon</Text>
-    </SafeAreaView>
+    <ScrollView>
+      <Header
+        name={pokemon.name}
+        order={pokemon.order}
+        image={pokemon.sprites.other["official-artwork"].front_default}
+        type={pokemon.types[0].type.name}
+      />
+      <Type types={pokemon.types} />
+      <Stats stats={pokemon.stats} />
+    </ScrollView>
   );
 }

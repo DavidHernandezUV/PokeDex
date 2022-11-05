@@ -1,4 +1,9 @@
-import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Platform,
+} from "react-native";
 import React from "react";
 import PokemonCard from "./PokemonCard";
 
@@ -19,12 +24,12 @@ export default function PokemonList(props) {
       //onEndReached={loadMore()} //ejecutar al llegar al final de la lista (si isNext tiene valor && ejectua loadMore )
       onEndReachedThreshold={0.1} //cargar más, antes de llegar al final
       onMomentumScrollBegin={() => {
-        this.onEndReachedCalledDuringMomentum = false;
+        onEndReachedCalledDuringMomentum = false;
       }}
       onEndReached={() => {
-        if (!this.onEndReachedCalledDuringMomentum) {
+        if (!onEndReachedCalledDuringMomentum) {
           loadMore(); // LOAD MORE DATA
-          this.onEndReachedCalledDuringMomentum = true;
+          onEndReachedCalledDuringMomentum = true;
         }
       }}
       ListFooterComponent={
@@ -43,9 +48,10 @@ export default function PokemonList(props) {
 const styles = StyleSheet.create({
   flatListContentContainer: {
     paddingHorizontal: 5,
+    marginTop: Platform.OS === "android" ? 30 : 0,
   },
   spinner: {
     marginTop: 20,
-    marginBottom: 60,
+    marginBottom: Platform.OS === "android" ? 90 : 60,
   },
 });
